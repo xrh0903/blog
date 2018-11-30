@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block left %}
+    {% if request.user.is_authenticated %}
+        <a href="/comment/">马上评论</a>
+    {% else %}
+        <a href="/login/">登录评论</a>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,160 @@
+{#<!DOCTYPE html>#}
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+    <script src="{% static 'jquery/jquery-3.2.1.min.js' %}"></script>
+
+    <script src="{% static 'jquery/jquery.session.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'bootstrap-3.3.7/css/bootstrap.min.css' %}">
+    <script src="{% static 'bootstrap-3.3.7/js/bootstrap.min.js' %}"></script>
+    <!-- 为使用方便，直接使用jquery.js库，如您代码中不需要，可以去掉 -->
+    <script src="http://code.jquery.com/jquery-1.12.3.min.js"></script>
+    <!-- 引入封装了failback的接口--initGeetest -->
+    <script src="http://static.geetest.com/static/tools/gt.js"></script>
+</head>
+<style></style>
+<body>
+
+<div class="container" style="margin-top: 100px">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h2>欢迎登录</h2>
+                </div>
+                <div class="panel-body">
+                    <form class="form-signin" novalidate>
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="username">用户名</label>
+                            <input type="text" id="username" class="form-control" placeholder="请输入用户名" required
+                                   autofocus>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">密码</label>
+                            <input type="password" id="password" class="form-control" placeholder="请输入密码" required
+                                   autofocus>
+                        </div>
+
+                        <div class="row valiCode">
+
+                            <div class="col-md-5">
+{#                                <div class="form-group">#}
+{#                                    <label for="validCode">验证码</label>#}
+{#                                    <input type="text" class="form-control validCode_text" id="validCode"#}
+{#                                           placeholder="请输入右侧验证码">#}
+{#                                </div>#}
+                            </div>
+                            <div class="col-md-7 ">
+{#                                <a href="">#}
+{#                                    <img class="validCode_img" src="/get_validCode_img/" alt="" width="160px" height="40px" >点击更换验证码#}
+{#                                </a>#}
+{#                                    <img class="validCode_img" src="/get_validCode_img/" alt="" width="160px" height="40px" title="点击更换验证码">#}
+                                    <div id="popup-captcha"></div>
+
+{#                                <input type="button" class="ret" style="background: none;border: none" id="fresh" value="看不清，换一张">#}
+                            </div>
+
+                        </div>
+
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" value="remember-me"> 记住密码
+                            </label>
+
+                            <a href="">忘记密码</a>
+                        </div>
+                    </form>
+                    <div class="col-md-4">
+                        <button class="btn  btn-info btn-block" id="subBtn">登录</button>
+                        <span class="error"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn  btn-success btn-block" id="register">注册</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<script src="{% static 'jquery/jquery.cookie.js' %}"></script>
+<script src="{% static 'blog/login.js' %}"></script>
+<script>
+
+
+    var handlerPopup = function (captchaObj) {
+        // 成功的回调
+        captchaObj.onSuccess(function () {
+            var validate = captchaObj.getValidate();
+            $.ajax({
+                url: "/pc-geetest/ajax_validate", // 进行二次验证
+                type: "post",
+                dataType: "json",
+                data: {
+                    username: $('#username').val(),
+                    password: $('#password').val(),
+                    csrfmiddlewaretoken:$("[name='csrfmiddlewaretoken']").val(),
+                    geetest_challenge: validate.geetest_challenge,
+                    geetest_validate: validate.geetest_validate,
+                    geetest_seccode: validate.geetest_seccode
+                },
+                success: function (data) {
+                    var response = data;
+
+                    if (response["is_login"]){
+                        if ($.cookie("next_path")){
+                        location.href=$.cookie("next_path");
+                        alert($.cookie("next_path"))
+                            $.removeCookie("next_path","",{ expires: -1 })
+                        }
+                        else{
+                            location.href="/index/"
+                        }
+                    }else{
+                        $(".error").html(response["error_msg"]).css("color","red");
+                    }
+                }
+            });
+        });
+        $("#subBtn").click(function () {
+            captchaObj.show();
+
+        });
+        // 将验证码加到id为captcha的元素里
+        captchaObj.appendTo("#popup-captcha");
+        // 更多接口参考：http://www.geetest.com/install/sections/idx-client-sdk.html
+    };
+    // 验证开始需要向网站主后台获取id，challenge，success（是否启用failback）
+    $.ajax({
+        url: "/pc-geetest/register?t=" + (new Date()).getTime(), // 加随机数防止缓存
+        type: "get",
+        dataType: "json",
+        success: function (data) {
+            // 使用initGeetest接口
+            // 参数1：配置参数
+            // 参数2：回调，回调的第一个参数验证码对象，之后可以使用它做appendTo之类的事件
+            initGeetest({
+                gt: data.gt,
+                challenge: data.challenge,
+                product: "popup", // 产品形式，包括：float，embed，popup。注意只对PC版验证码有效
+                offline: !data.success // 表示用户后台检测极验服务器是否宕机，一般不需要关注
+                // 更多配置参数请参见：http://www.geetest.com/install/sections/idx-client-sdk.html#config
+            }, handlerPopup);
+        }
+    });
+
+</script>
+
+
+</body>
+</html>
+

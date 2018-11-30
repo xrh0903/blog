@@ -1,0 +1,142 @@
+
+.title{
+    color: #2aabd2;
+}
+
+
+.article_region .article_con{
+    margin-left: 20px;
+}
+
+
+.updown .diggit{
+    width: 46px;
+    height: 52px;
+    background: url("/static/img/upup.gif") no-repeat;
+    text-align: center;
+    cursor: pointer;
+    margin-top: 2px;
+    padding-top: 5px;
+}
+
+.updown .buryit{
+    margin-left:20px;
+    width: 46px;
+    height: 52px;
+    background: url("/static/img/downdown.gif") no-repeat;
+    text-align: center;
+    cursor: pointer;
+    margin-top: 2px;
+    padding-top: 5px;
+}
+/*.updown{*/
+    /*margin-left: 0;*/
+/*}*/
+
+.subComment_region #tbCommentAuthor{
+        background-position: 3px -3px;
+        background-image: url("/static/img/icon_form.gif");
+        background-repeat: no-repeat;
+        border: 1px solid #ccc;
+        padding: 4px 4px 4px 30px;
+        width: 300px;
+        font-size: 13px;
+}
+
+#commentform_title {
+    background-image: url("/static/img/icon_addcomment.gif");
+    background-repeat: no-repeat;
+    padding: 0 0 0 25px;
+    margin-bottom: 10px;
+}
+.author_avatar{
+    margin-left: 20px;
+}
+
+
+
+.had_comment_region input.author{
+    background-image: url("/static/img/icon_form.gif");
+    background-repeat: no-repeat;
+    border: 1px solid #ccc;
+    padding: 4px 4px 4px 30px;
+    width: 300px;
+    font-size: 13px;
+}
+
+#author_profile {
+    float: left;
+    width: 280px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #000;
+    margin-left: 0;
+    font-size: 12px;
+}
+.author_profile_info {
+    float: left;
+    line-height: 18px;
+}
+div {
+    display: block;
+}
+
+.author_avatar {
+    vertical-align: top;
+    float: left;
+    margin-right: 5px;
+    padding-top: 5px;
+    padding-left: 2px;
+    border: 0;
+}
+
+.author_profile_info {
+    float: left;
+    line-height: 18px;
+}
+
+
+.author_profile .author_profile_info .author_profile_detail a{
+    border-bottom: 2px dotted #333;
+    color: #000;
+    text-decoration: none;
+}
+
+.sendMsg2This:link, .sendMsg2This:visited, .sendMsg2This:active {
+    font-size: 12px;
+    text-decoration: none;
+    background: url("/static/img/icoMsg.gif") no-repeat top left;
+    padding-left: 20px;
+}
+
+.feedbackListSubtitle a:hover {
+    color: #f60;
+    text-decoration: none;
+}
+
+
+.sendMsg2This:hover {
+    background: url("/static/img/icoMsg.gif") no-repeat bottom left;
+}
+
+
+.sp:hover{
+    color: #f60;
+    text-decoration: none;
+}
+.sp {
+    color: #666;
+    font-weight: normal;
+}
+
+
+
+
+.pl{
+    margin-left: 0;
+}
+
+.comment{
+    margin-left: 20px;
+}
+

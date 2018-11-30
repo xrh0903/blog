@@ -1,0 +1,81 @@
+{% extends "backendindex.html" %}
+
+{% block manageCon %}
+    <span class="success" style="color: red"></span>
+
+    <form action="/blog/{{ request.user.username }}/backindex/addarticle/" method="post" novalidate>
+        {% csrf_token %}
+        <label for="title">文章标题</label>
+        <p>{{ article_form.title }}</p>
+        <label for="title">文章内容</label>
+        <p>{{ article_form.content }}</p>
+    <p>文章分类</p>
+        {% for cate in cate_list %}
+            <input type="radio" name="personal_cate" value="{{ cate.nid }}">{{ cate.title }}
+        {% endfor %}
+    <p>文章标签</p>
+        {% for tag in tag_list %}
+            <input type="checkbox" name="personal_tag" value="{{ tag.nid }}">{{ tag.title }}
+        {% endfor %}
+    </form>
+    <button id="submit">提交</button>
+
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
+{% block script %}
+<script>
+
+function foo() {
+    $(".success").html("")
+}
+
+
+    KindEditor.ready(function(K) {
+                window.editor = K.create('#editor_id',{
+                        width:"800px",
+                        height:"400px",
+                        resizeType:0,
+                        uploadJson:"/uploadFile/",
+                        extraFileUploadParams:{
+                           csrfmiddlewaretoken:$("[name='csrfmiddlewaretoken']").val(),
+                       },
+                });
+     });
+     $("#submit").click(function () {
+         $.ajax({
+             url:"/blog/{{ request.user.username }}/backindex/addarticle/",
+             type:"POST",
+             data:{
+                 title:$("[name=title]").val(),
+                 content:editor.html(),
+                 tag:$("[name=personal_tag]").val(),
+                 cate:$("[name=personal_cate]").val(),
+                 csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val(),
+             },
+             success:function (data) {
+                 editor.html(""),
+                 $("[name=title]").val(""),
+                 $(".success").html("添加成功"),
+                     setTimeout(foo,3000)
+             }
+         })
+     });
+
+    </script>
+{% endblock %}
+
+
+
+
+
+
+

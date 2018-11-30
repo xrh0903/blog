@@ -1,0 +1,206 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+    <script src="{% static 'jquery/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'jquery/jquery.cookie.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'bootstrap-3.3.7/css/bootstrap.min.css' %}">
+    <script src="{% static 'bootstrap-3.3.7/js/bootstrap.min.js' %}"></script>
+
+
+</head>
+<body>
+
+{#导航条部分#}
+<nav class="navbar navbar-inverse">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#"><span class="glyphicon glyphicon-home">个人博客</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                {% if request.user.is_authenticated %}
+                    <li><a href="">当前用户<span class="glyphicon glyphicon-user"></span>：{{ request.user.username }}</a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">更多操作 <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/log_out/"><span class="glyphicon glyphicon-off"></span>注销</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-repeat"></span>修改密码</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-tint"></span>帮助</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-question-sign"></span>更多</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-menu-hamburger"></span>关于</a></li>
+                            <li role="separator" class="divider"></li>
+                        </ul>
+                    </li>
+
+                {% else %}
+                    <li><a href="/login/"><span class="glyphicon glyphicon-user"></span>登录</a></li>
+                    <li><a href="/reg/"><span class="glyphicon glyphicon-user"></span>注册</a></li>
+                {% endif %}
+
+            </ul>
+
+
+        </div>
+    </div>
+</nav>
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-2">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">网站导航分类</div>
+                <div class="panel-body">
+                    {% for cate in cate_list %}
+                        <div class="panel panel-default">
+                            <div class="panel-body cate_title">{{ cate.name }}</div>
+
+                            <div class="panel-footer hide sub">
+                                {% for sitearticlecategory in cate.sitearticlecategory_set.all %}
+                                    <p><a href="/cate/{{ sitearticlecategory.name }}">{{ sitearticlecategory.name }}</a>
+                                    </p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="col-md-7">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">博客园主页文章显示</div>
+                <div class="panel-body">
+
+                    {% for article in article_list %}
+                        <div class="article_item">
+                            <div class="title"><a href="/blog/{{ article.user.username }}/article/{{ article.nid }}"><h4>{{ article.title }}</h4></a></div>
+                            <div class="row">
+                                <div class="avatar col-md-2">
+                                    <a href="{% url 'blog' article.user.username %}">
+
+                                        <img src="{{ article.user.avatar.url }}" width="70" height="70" alt="">
+                                    </a>
+                                </div>
+                                <div class="col-md-10">
+                                    <p>{{ article.desc }}</p>
+                                </div>
+                            </div>
+
+                            <div class="pub_info row">
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <a href="/blog/{{ article.user.username }}">{{ article.user.username }} </a>发布于：{{ article.create_time }}
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <a href=""><span
+                                        class="glyphicon glyphicon-comment"></span>评论{{ article.comment_count }}
+                                </a>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <a href=""><span class="glyphicon glyphicon-thumbs-up"></span>点赞{{ article.up_count }}
+                                </a>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <a href=""><span class="glyphicon glyphicon-share-alt">转发</span></a>
+                            </div>
+                        </div>
+                        <hr>
+                    {% endfor %}
+
+
+                </div>
+            </div>
+
+            <div class="page_page" style="text-align: center">
+                {% block page %}
+
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            {% if article_list.has_previous %}
+                                <li><a href="/index?page={{ article_list.previous_page_number }}"
+                                       aria-label="Previous">上一页</a>
+                                </li>
+                            {% else %}
+                                <li class="disabled"><a href="" aria-label="Previous">上一页</a></li>
+                            {% endif %}
+
+
+                            {% for index in page_range %}
+                                {% if num == index %}
+                                    <li class="active"><a href="/index?page={{ index }}">{{ index }}</a></li>
+                                {% else %}
+                                    <li><a href="/index?page={{ index }}">{{ index }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+
+                            {% if article_list.has_next %}
+                                <li><a href="/index?page={{ article_list.next_page_number }}"
+                                       aria-label="Previous">下一页</a></li>
+                            {% else %}
+                                <li class="disabled"><a href="" aria-label="Previous">下一页</a></li>
+                            {% endif %}
+
+                        </ul>
+                    </nav>
+
+                {% endblock %}
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+            {#            右侧分类展示#}
+            <div class="panel panel-default">
+                <div class="panel-heading">广告位</div>
+                <div class="panel-body">
+                    <p>&&&&&</p>
+                    <p>$$$$$</p>
+                    <p>#####</p>
+                    <p>*****</p>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">备用标题二</div>
+                <div class="panel-body">
+                    <p>内容一</p>
+                    <p>内容二</p>
+                    <p>内容三</p>
+                    <p>内容四</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+
+    $(".cate_title").click(function () {        {#点击当前的#}
+        $(".sub").addClass("hide");
+        {#子菜单添加隐藏属性#}
+        $(this).next().toggleClass("hide");
+        {#有的话添加，没有的话去掉#}
+
+    });
+
+
+</script>
+
+</body>
+</html>
+
+

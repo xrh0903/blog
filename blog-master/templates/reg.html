@@ -1,0 +1,117 @@
+{#<!DOCTYPE html>#}
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="{% static 'jquery/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'jquery/jquery.cookie.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'bootstrap-3.3.7/css/bootstrap.min.css' %}">
+</head>
+<style>
+
+    .cc {
+        margin-top: 10px;
+    }
+    .avator_div {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        cursor: hand;
+    }
+    .avator_img, .avator_file {
+        position: absolute;
+        left: 80px;
+        top: 0;
+        width: 60px;
+        height: 60px;
+    {#        cursor: hand;#}
+
+    }
+
+    .avator_file {
+        opacity: 0;
+    {#        cursor: hand;#}{#        display: none;#}
+    }
+
+
+</style>
+<body>
+
+
+{#<img src="/static/img/top.png" style="width: 100%;position: fixed;top: 0;left: 0;">#}
+
+<div class="container" style="margin-top: 20px">
+    <div class="row">
+        <h2>注册页面</h2>
+        <hr>
+        <div class="col-md-6">
+            <form novalidate action="index.html" method="post">
+                {% csrf_token %}
+                <div class="cc">用户名：
+                    {{ regform.username }}
+                </div>
+
+                <div class="cc">密码：
+                    {{ regform.password }}
+                </div>
+
+                <div class="cc">确认密码：
+                    {{ regform.repassword }}
+                </div>
+
+                <div class="cc">邮箱：
+                    {{ regform.email }}
+                </div>
+
+                <div class="avator_div cc">
+                    <label for="avator">头像：</label>
+                    <img src="{% static 'img/default.png' %}" class="avator_img" id="preScan">
+                    <input type="file" id="avator" class="avator_file">
+                </div>
+
+
+                <div class="row valiCode">
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="validCode">验证码：</label>
+                            {{ regform.valid_code }}
+                        </div>
+                    </div>
+                    <div class="col-md-7 " style="margin-top: 20px">
+                        <img class="validCode_img" src="/get_validCode_img/" alt="" width="160px" height="40px" >
+                    </div>
+
+                </div>
+
+                <button type="button" class="btn btn-success ajax_signUp">点击注册</button>
+
+
+            </form>
+        </div>
+        <div class="col-md-4 col-md-offset-1">
+            <img src="{% static 'img/registersideimg.png' %}" alt="">
+        </div>
+
+    </div>
+</div>
+
+
+</body>
+
+<script src="{% static 'blog/register.js' %}"></script>
+
+<script>
+
+
+
+
+</script>
+
+
+
+</html>
+
+
+
+

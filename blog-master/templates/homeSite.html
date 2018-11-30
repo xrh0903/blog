@@ -1,0 +1,210 @@
+{#<!DOCTYPE html>#}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ current_user.nickname }}</title>
+
+    <link rel="stylesheet" href="/static/bootstrap-3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/blog/article_detail.css">
+
+
+    <script src="/static/jquery/jquery-3.2.1.min.js"></script>
+    <script src="/static/jquery/jquery.cookie.js"></script>
+    <script src="/static/jquery/jquery.session.js"></script>
+    <script src="/static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="/static/blog/homesite.js"></script>
+    <script src="/static/kindeditor/kindeditor-all.js"></script>
+    <script src="/static/kindeditor/lang/zh-CN.js"></script>
+    <link rel="stylesheet" href="/static/theme/{{ current_user.blog.theme }}">
+
+
+    <style>
+        .tops a {
+            margin-right: 20px;
+        }
+
+        #comment_con {
+            width: 500px;
+            height: 250px;
+        }
+
+        .comment_tree_list {
+            margin-left: -40px;
+        }
+
+        .offset {
+            margin-left: 40px;
+        }
+    </style>
+</head>
+<body>
+
+
+{#    顶部博客名字#}
+<div class="headding">
+    <div class="container"><h2>welcome {{ username }} to myhome_page </h2></div>
+</div>
+
+{#    顶部导航#}
+<nav class="navbar navbar-inverse">
+    <div class="container">
+        <div class="navbar-header tops">
+            <a class="navbar-brand" href="/index/"><span class="glyphicon glyphicon-home">博客园首页</span></a>
+            <a class="navbar-brand" href=""><span class="glyphicon glyphicon-phone-alt">联系</span></a>
+            <a class="navbar-brand" href=""><span class="glyphicon glyphicon-file">订阅</span></a>
+            <a class="navbar-brand" href="/blog/{{ request.user.username }}/backindex/"><span
+                    class="glyphicon glyphicon-cog">管理</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+
+                <li><a href="">随笔：{{ article_list.count }}</a></li>
+                <li><a href="">文章：{{ article_list.count }}</a></li>
+                <li><a href="">评论：{{ article_list.first.comment_count }}</a></li>
+
+
+            </ul>
+
+
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+{#    博客主体部分#}
+<div class="container">
+
+    <div class="row">
+
+        <div class="col-md-3">
+            <div class="panel panel-danger">
+                <div class="panel-heading">个人资料</div>
+                <div class="panel-body">
+                    <p>头像：<img src="{{ current_user.avatar.url }}" width="80" height="80" alt=""
+                               style="border-radius: 10px"></p>
+                    <p>昵称：{{ current_user.nickname }}</p>
+                    <p>园龄：{{ current_user.create_time }}</p>
+                    <p>关注：{{ current_user.fans.count }}</p>
+                    <p>粉丝：{{ current_user.users.count }}</p>
+                </div>
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading">分类归档</div>
+                <div class="panel-body">
+                    {% for category in category_list %}
+                        <p>
+                            <a href="/blog/{{ current_user.username }}/category/{{ category.0 }}">{{ category.0 }}({{ category.1 }})</a>
+                        </p>
+                    {% endfor %}
+
+                </div>
+            </div>
+            <div class="panel panel-success">
+                <div class="panel-heading">标签归档</div>
+                <div class="panel-body">
+                    {% for tag in tag_list %}
+                        <p><a href="/blog/{{ current_user.username }}/tag/{{ tag.0 }}">{{ tag.0 }}({{ tag.1 }})</a></p>
+                    {% endfor %}
+
+                </div>
+            </div>
+            <div class="panel panel-warning">
+                <div class="panel-heading">日期归档</div>
+                <div class="panel-body">
+                    {% for data in data_list %}
+                        <p><a href="/blog/{{ current_user.username }}/date/{{ data.0 }}">{{ data.0 }}({{ data.1 }})</a>
+                        </p>
+                    {% endfor %}
+
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">最新评论</div>
+                <div class="panel-body">
+                    <p>评论一</p>
+                    <p>评论二</p>
+                    <p>评论三</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-8">
+            {#        主体#}
+
+            {% block content %}
+
+                <div class="panel panel-primary">
+                    <div class="panel-heading"><h4>个人博客文章</h4></div>
+                    <div class="panel-body">
+                        {% for article in article_list %}
+                            <div class="row">
+                                <div class="article_title"><h4><a
+                                        href="/blog/{{ current_user.username }}/article/{{ article.nid }}">{{ article.title }}</a>
+                                </h4></div>
+                                <div class="article_desc">
+                                    <p>{{ article.desc }}</p>
+                                </div>
+                                <div class="info">
+                                    发表于 <span>{{ article.create_time|date:"Y-m-d" }}</span>
+                                    <span>评论({{ article.comment_count }})</span>
+                                    <span>点赞({{ article.up_count }})</span>
+                                    <span>阅读({{ article.read_count }})</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            {% endblock %}
+
+            <div class="page_page" style="text-align: center">
+
+                {#        分页按钮功能#}
+                {% block page %}
+
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            {% if article_list.has_previous %}
+                                <li>
+                                    <a href="/blog/{{ current_user.username }}?page={{ article_list.previous_page_number }}"
+                                       aria-label="Previous">上一页</a>
+                                </li>
+                            {% else %}
+                                <li class="disabled"><a href="" aria-label="Previous">上一页</a></li>
+                            {% endif %}
+
+
+                            {% for index in page_range %}
+                                {% if num == index %}
+                                    <li class="active"><a
+                                            href="/blog/{{ current_user.username }}?page={{ index }}">{{ index }}</a>
+                                    </li>
+                                {% else %}
+                                    <li><a href="/blog/{{ current_user.username }}?page={{ index }}">{{ index }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+
+                            {% if article_list.has_next %}
+                                <li><a href="/blog/{{ current_user.username }}?page={{ article_list.next_page_number }}"
+                                       aria-label="Previous">下一页</a></li>
+                            {% else %}
+                                <li class="disabled"><a href="" aria-label="Previous">下一页</a></li>
+                            {% endif %}
+
+                        </ul>
+                    </nav>
+
+                {% endblock %}
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ request.user.username }}的后台管理首页</title>
+    <link rel="stylesheet" href="/static/bootstrap-3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/blog/manmager_page.css">
+    <script src="/static/jquery/jquery-3.2.1.min.js"></script>
+    <script src="/static/jquery/jquery.cookie.js"></script>
+
+    <script src="/static/kindeditor/kindeditor-all.js"></script>
+    <script src="/static/kindeditor/lang/zh-CN.js"></script>
+
+
+</head>
+<body>
+
+<div class="headding">
+    <div class="container"><h2>welcome<a href=""> {{ request.user.username }}</a> to myhome_page </h2></div>
+</div>
+<hr>
+
+<div class="container">
+    <div class="row">
+
+
+        <div class="col-md-3">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading"><h2>后台管理页面</h2></div>
+                <div class="panel-body">
+                    <h3><a href="/blog/{{ request.user.username }}/backindex/">后台管理首页</a></h3>
+                    <h3><a href="/blog/{{ request.user.username }}">个人博客主页</a></h3>
+                    <h3><a href="/blog/{{ request.user.username }}/backindex/">文章管理</a></h3>
+                    <h3><a href="/blog/{{ request.user.username }}/backindex/tags/">标签管理</a></h3>
+                    <h3><a href="/blog/{{ request.user.username }}/backindex/category/">分类管理</a></h3>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-8">
+            {% block manageCon %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">用户文章信息</div>
+                    <div class="panel-body">
+                        <a href="/blog/{{ request.user.username }}/backindex/addarticle/">
+                    <button class="btn btn-primary">+添加文章</button>
+                </a>
+                        <table class="table table-bordered table-hover">
+                    <tr>
+                        <th>编号</th>
+                        <th>标题</th>
+                        <th>评论数</th>
+                        <th>点赞数</th>
+                        <th>创建时间</th>
+                        <th>编辑</th>
+                        <th>删除</th>
+                    </tr>
+                    {% for article in article_obj %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ article.title }}</td>
+                            <td>{{ article.comment_count }}</td>
+                            <td>{{ article.up_count }}</td>
+                            <td>{{ article.create_time }}</td>
+                            <td>
+                                <a href="/blog/{{ request.user.username }}/backindex/addarticle/"><button class="btn edit btn-info " article_nid="{{ article.nid }}"><span
+                                        class="glyphicon glyphicon-pencil">编辑</span></button></a>
+                            </td>
+                            <td>
+                                <button class="btn del btn-danger" article_nid="{{ article.nid }}"><span
+                                        class="glyphicon glyphicon-remove">删除</span></button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                </table>
+                    </div>
+                </div>
+
+
+                <div class="page_page" style="text-align: center">
+
+                    {#        分页按钮功能#}
+                    {% block page %}
+
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                {% if article_obj.has_previous %}
+                                    <li>
+                                        <a href="/blog/{{ current_user.username }}/backindex/?page={{ article_list.previous_page_number }}"
+                                           aria-label="Previous">上一页</a>
+                                    </li>
+                                {% else %}
+                                    <li class="disabled"><a href="" aria-label="Previous">上一页</a></li>
+                                {% endif %}
+
+
+                                {% for index in page_range %}
+                                    {% if num == index %}
+                                        <li class="active"><a
+                                                href="/blog/{{ request.user.username }}/backindex/?page={{ index }}">{{ index }}</a>
+                                        </li>
+                                    {% else %}
+                                        <li>
+                                            <a href="/blog/{{ request.user.username }}/backindex/?page={{ index }}">{{ index }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+
+
+                                {% if article_obj.has_next %}
+                                    <li>
+                                        <a href="/blog/{{ request.user.username }}/backindex/?page={{ article_list.next_page_number }}"
+                                           aria-label="Previous">下一页</a></li>
+                                {% else %}
+                                    <li class="disabled"><a href="" aria-label="Previous">下一页</a></li>
+                                {% endif %}
+
+                            </ul>
+                        </nav>
+
+                    {% endblock %}
+                </div>
+
+            {% endblock %}
+
+        </div>
+
+
+    </div>
+</div>
+
+
+{% block script %}
+
+{% endblock %}
+
+<script>
+    $(".table").on("click", ".del", function () {
+        $.ajax({
+            url: "/blog/{{ request.user.username }}/backindex/delarticle/",
+            type: "POST",
+            headers: {"X-CSRFToken": $.cookie('csrftoken')},
+            data: {
+                article_nid: $(this).attr("article_nid")
+            },
+            success: function (data) {
+                var data = JSON.parse(data)
+                if (data["is_del"]) {
+                    location.href = "/blog/{{ request.user.username }}/backindex/"
+                }
+            }
+        })
+    });
+
+
+</script>
+
+
+</body>
+</html>
